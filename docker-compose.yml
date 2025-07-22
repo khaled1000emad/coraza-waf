@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  waf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - juice-shop
+    volumes:
+      - ./coraza.conf:/app/coraza.conf:ro
+      - ./rules:/app/rules:ro
+      - ./ruleset:/app/ruleset:ro
+    environment:
+      - JUICE_SHOP_URL=http://juice-shop:3000
+
+  juice-shop:
+    image: bkimminich/juice-shop:v17.0.0
+    networks:
+      - app-network
+    expose:
+      - "3000"
+
+networks:
+  app-network:
+    driver: bridge
